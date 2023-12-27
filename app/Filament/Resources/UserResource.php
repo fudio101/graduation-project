@@ -88,6 +88,9 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('index')
                     ->rowIndex(),
+                Tables\Columns\ImageColumn::make('avatar_url')
+                    ->visibility('private')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
