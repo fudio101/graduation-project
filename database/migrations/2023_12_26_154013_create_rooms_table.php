@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('room_type_id')->references('id')->on('room_types');
             $table->unsignedBigInteger('house_id');
             $table->foreign('house_id')->references('id')->on('houses');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

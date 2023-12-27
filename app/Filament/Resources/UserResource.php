@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\UserResource\RelationManagers\HousesRelationManager;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
@@ -48,7 +48,7 @@ class UserResource extends Resource
                     ->placeholder(__('Avatar'))
                     ->translateLabel()
                     ->helperText('Max. 2MB')
-                    ->columnSpan(2),
+                    ->columnSpan('full'),
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
@@ -72,6 +72,7 @@ class UserResource extends Resource
                     ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                     ->dehydrated(fn(?string $state): bool => filled($state))
                     ->required(fn(string $operation): bool => $operation === 'create')
+                    ->maxLength(255)
                     ->minLength(8)
                     ->placeholder(__('Password'))
                     ->translateLabel()
@@ -136,7 +137,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            HousesRelationManager::class,
         ];
     }
 

@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('houses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('province_id');
-            $table->integer('district_id');
-            $table->integer('ward_id');
-            $table->string('address');
-            $table->text('description');
+            $table->integer('province_id')->nullable();
+            $table->integer('district_id')->nullable();
+            $table->integer('ward_id')->nullable();
+            $table->string('address')->nullable();
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('manager_id');
             $table->foreign('manager_id')->references('id')->on('users');
             $table->timestamps();

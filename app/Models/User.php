@@ -65,6 +65,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function houses(): HasMany
     {
-        return $this->hasMany(House::class);
+        return $this->hasMany(House::class, 'manager_id');
     }
 }
