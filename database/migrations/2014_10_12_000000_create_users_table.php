@@ -15,7 +15,8 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('avatar')->nullable();
+            $table->string('avatar_url')->nullable();
+            $table->string('avatar_name')->nullable();
             $table->string('password');
             $table->integer('role')->default(UserRole::NormalUser);
             $table->rememberToken();

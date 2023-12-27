@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use Exception;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -25,6 +26,29 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\FileUpload::make('avatar_url')
+                    ->disk('public')
+                    ->directory('user-avatars')
+                    ->visibility('private')
+                    ->image()
+                    ->avatar()
+                    ->storeFileNamesIn('avatar_name')
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '16:9',
+                        '4:3',
+                        '1:1',
+                    ])
+                    ->imageEditorEmptyFillColor('#000000')
+                    ->imageEditorViewportWidth('1920')
+                    ->imageEditorViewportHeight('1080')
+                    ->circleCropper()
+                    ->maxSize(2048)
+                    ->placeholder(__('Avatar'))
+                    ->translateLabel()
+                    ->helperText('Max. 2MB')
+                    ->columnSpan(2),
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
@@ -32,7 +56,7 @@ class UserResource extends Resource
                     ->maxLength(255)
                     ->placeholder(__('Email'))
                     ->translateLabel()
-                    ->disabled(),
+                    ->disabled(fn(string $operation): bool => $operation !== 'create'),
                 Forms\Components\TextInput::make('name')
                     ->autofocus()
                     ->required()
@@ -55,6 +79,9 @@ class UserResource extends Resource
             ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -88,7 +115,10 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('role')
+                    ->options(UserRole::class)
+                    ->multiple()
+                    ->label(__('Role')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
