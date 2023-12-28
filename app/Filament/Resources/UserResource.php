@@ -88,35 +88,43 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('index')
-                    ->rowIndex(),
+                    ->rowIndex()
+                    ->translateLabel(),
                 Tables\Columns\ImageColumn::make('avatar_url')
                     ->visibility('private')
-                    ->circular(),
+                    ->circular()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('email')
                     ->copyable()
                     ->copyMessage('Email address copied')
                     ->copyMessageDuration(1500)
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime('Y-m-d H:i:s', '+7')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i:s', '+7')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime('Y-m-d H:i:s', '+7')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->translateLabel(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('role')
@@ -126,6 +134,8 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
