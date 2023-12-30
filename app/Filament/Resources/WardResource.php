@@ -17,7 +17,11 @@ class WardResource extends Resource
 {
     protected static ?string $model = Ward::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Administrative Unit';
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-library';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -41,7 +45,6 @@ class WardResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->searchable()
                     ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('name')
@@ -56,9 +59,7 @@ class WardResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('district_id')
-                    ->searchable()
-                    ->sortable()
+                Tables\Columns\TextColumn::make('district.name')
                     ->translateLabel(),
             ])
             ->filters([
@@ -76,4 +77,9 @@ class WardResource extends Resource
             'index' => Pages\ManageWards::route('/'),
         ];
     }
+
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return static::getModel()::count();
+//    }
 }
