@@ -33,7 +33,7 @@ class UserResource extends Resource
                     ->image()
                     ->avatar()
                     ->storeFileNamesIn('avatar_name')
-                    ->imageEditor()
+                    ->imageEditor(fn(string $operation): bool => $operation !== 'view')
                     ->imageEditorAspectRatios([
                         null,
                         '16:9',
@@ -76,7 +76,8 @@ class UserResource extends Resource
                     ->minLength(8)
                     ->placeholder(__('Password'))
                     ->translateLabel()
-                    ->helperText('Let this blank if you don\'t want to change the password.'),
+                    ->helperText('Let this blank if you don\'t want to change the password.')
+                    ->hidden(fn(string $operation): bool => $operation === 'view'),
             ]);
     }
 
@@ -107,22 +108,18 @@ class UserResource extends Resource
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
-                    ->searchable()
                     ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime('Y-m-d H:i:s', '+7')
-                    ->searchable()
                     ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i:s', '+7')
-                    ->searchable()
                     ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime('Y-m-d H:i:s', '+7')
-                    ->searchable()
                     ->sortable()
                     ->translateLabel(),
             ])
@@ -141,7 +138,8 @@ class UserResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordUrl(null);
     }
 
     public static function getRelations(): array

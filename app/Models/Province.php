@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Sushi\Sushi;
@@ -46,6 +47,11 @@ class Province extends Model
                 ]
             );
         });
+    }
+
+    public function districts(): HasMany
+    {
+        return $this->hasMany(District::class);
     }
 
     protected function sushiShouldCache(): bool
