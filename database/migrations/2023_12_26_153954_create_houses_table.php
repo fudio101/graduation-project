@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('manager_id');
             $table->foreign('manager_id')->references('id')->on('users');
+            $table->tinyInteger('status')->default(0)->comment('0: inactive, 1: active, 2: pending, 3: registered');
             $table->timestamps();
             $table->softDeletes();
         });
