@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\HouseResource\Pages;
+use App\Models\User;
 use App\Models\District;
 use App\Models\House;
+use App\Models\Room;
 use App\Models\Province;
 use App\Models\Ward;
 use Filament\Forms;
@@ -18,6 +20,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
+use Illuminate\Database\Eloquent\Builder;
 
 class HouseResource extends Resource
 {
@@ -46,6 +49,9 @@ class HouseResource extends Resource
                     ->relationship('manager', 'name')
                     ->required()
                     ->placeholder(__('Select Manager'))
+                    ->options(function () {
+                        return User::whereIn('role', [1, 2, 3])->pluck('name', 'id');
+                    })
                     ->translateLabel(),
                 RichEditor::make('description')
                     ->maxLength(65535)
@@ -144,7 +150,14 @@ class HouseResource extends Resource
                 TextColumn::make('manager.name')
                     ->searchable()
                     ->sortable()
-                    ->translateLabel(),                    
+                    ->translateLabel(),
+                TextColumn::make('manager.name')
+                    ->searchable()
+                    ->sortable()
+                    ->translateLabel(),
+                TextColumn::make('rooms_count')
+                    ->label('Count rooms')
+                    ->counts('rooms'),
                     // Tables\Columns\TextColumn::make('district.name')
                     //     ->translateLabel(),
                     // Tables\Columns\TextColumn::make('ward.name')
