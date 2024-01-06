@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\HouseRoomStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('manager_id');
             $table->foreign('manager_id')->references('id')->on('users');
-            $table->tinyInteger('status')->default(0)->comment('0: inactive, 1: active, 2: pending, 3: registered');
+            $table->tinyInteger('status')->default(HouseRoomStatus::Inactive)->comment('0: inactive, 1: active, 2: pending, 3: registered');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\HouseRoomStatus;
+use App\Enums\UserRole;
 use App\Filament\Resources\HouseResource\Pages;
 use App\Models\User;
 use App\Models\District;
@@ -28,11 +30,11 @@ class HouseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-        // Change name in page header navigation
-        protected static ?string $navigationGroup = 'House and Room Management'; 
+    // Change name in page header navigation
+    protected static ?string $navigationGroup = 'House and Room Management';
 
-        // Sort order in navigation
-        protected static ?int $navigationSort = 1;
+    // Sort order in navigation
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -50,7 +52,7 @@ class HouseResource extends Resource
                     ->required()
                     ->placeholder(__('Select Manager'))
                     ->options(function () {
-                        return User::whereIn('role', [1, 2, 3])->pluck('name', 'id');
+                        return User::whereIn('role', [UserRole::Admin, UserRole::Owner, UserRole::Manager])->pluck('name', 'id');
                     })
                     ->translateLabel(),
                 RichEditor::make('description')
@@ -108,17 +110,13 @@ class HouseResource extends Resource
                     ->placeholder(__('Address'))
                     ->translateLabel(),
                 Radio::make('status')
-                    ->options([
-                        0 => __('Inactive'),
-                        1 => __('Active'),
-                        2 => __('Pending'),
-                        3 => __('Registered'),
-                    ])
+                    ->options(HouseRoomStatus::class)
                     ->inline()
-                    ->default(0)
+                    ->columnSpan('full')
+                    ->default(HouseRoomStatus::Inactive)
                     ->required()
                     ->translateLabel(),
-                ]);
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -134,19 +132,9 @@ class HouseResource extends Resource
                     ->translateLabel(),
                 TextColumn::make('province.name')
                     ->translateLabel(),
-                IconColumn::make('status')
-                ->icon(fn (int $state): string => match ($state) {
-                    0 => 'heroicon-s-exclamation-circle',
-                    1 => 'heroicon-s-check-circle',
-                    2 => 'heroicon-s-wrench-screwdriver',
-                    3 => 'heroicon-s-pencil',
-                })
-                ->color(fn (int $state): string => match ($state) {
-                    0 => 'danger',
-                    1 => 'success',
-                    2 => 'gray',
-                    3 => 'info',
-                }),
+                TextColumn::make('status')
+                    ->badge()
+                    ->translateLabel(),
                 TextColumn::make('manager.name')
                     ->searchable()
                     ->sortable()
@@ -158,24 +146,24 @@ class HouseResource extends Resource
                 TextColumn::make('rooms_count')
                     ->label('Count rooms')
                     ->counts('rooms'),
-                    // Tables\Columns\TextColumn::make('district.name')
-                    //     ->translateLabel(),
-                    // Tables\Columns\TextColumn::make('ward.name')
-                    //     ->translateLabel(),
-                    // Tables\Columns\TextColumn::make('address')
-                    //     ->sortable()
-                    //     ->translateLabel(),
-                    // Tables\Columns\TextColumn::make('created_at')
-                    //     ->dateTime('Y-m-d H:i:s', '+7')
-                    //     ->sortable()
-                    //     ->translateLabel(),
-                    // Tables\Columns\TextColumn::make('updated_at')
-                    //     ->dateTime('Y-m-d H:i:s', '+7')
-                    //     ->sortable()
-                    //     ->translateLabel(),
+                // Tables\Columns\TextColumn::make('district.name')
+                //     ->translateLabel(),
+                // Tables\Columns\TextColumn::make('ward.name')
+                //     ->translateLabel(),
+                // Tables\Columns\TextColumn::make('address')
+                //     ->sortable()
+                //     ->translateLabel(),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->dateTime('Y-m-d H:i:s', '+7')
+                //     ->sortable()
+                //     ->translateLabel(),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->dateTime('Y-m-d H:i:s', '+7')
+                //     ->sortable()
+                //     ->translateLabel(),
             ])
             ->filters([
-                    //
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -193,7 +181,7 @@ class HouseResource extends Resource
     public static function getRelations(): array
     {
         return [
-                //
+            //
         ];
     }
 

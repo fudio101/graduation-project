@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\HouseRoomStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,6 +25,15 @@ class House extends Model
         'address',
         'description',
         'manager_id',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'status' => HouseRoomStatus::class,
     ];
 
     public function manager(): BelongsTo
