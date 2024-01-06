@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\HouseRoomStatus;
 use App\Filament\Resources\RoomsResource\Pages;
 use App\Filament\Resources\RoomsResource\RelationManagers;
 use App\Models\Room;
@@ -29,7 +30,7 @@ class RoomsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     // Change name in page header navigation
-    protected static ?string $navigationGroup = 'House and Room Management'; 
+    protected static ?string $navigationGroup = 'House and Room Management';
 
     // Sort order in navigation
     protected static ?int $navigationSort = 2;
@@ -66,15 +67,10 @@ class RoomsResource extends Resource
                     ->columnSpan('full')
                     ->placeholder(__('Description'))
                     ->translateLabel(),
-                    Radio::make('status')
-                    ->options([
-                        0 => __('Inactive'),
-                        1 => __('Active'),
-                        2 => __('Pending'),
-                        3 => __('Registered'),
-                    ])
+                Radio::make('status')
+                    ->options(HouseRoomStatus::class)
                     ->inline()
-                    ->default(0)
+                    ->default(HouseRoomStatus::Inactive)
                     ->required()
                     ->translateLabel(),
             ]);
@@ -96,19 +92,9 @@ class RoomsResource extends Resource
                     ->label('House')
                     ->searchable()
                     ->sortable(),
-                IconColumn::make('status')
-                ->icon(fn (int $state): string => match ($state) {
-                    0 => 'heroicon-s-exclamation-circle',
-                    1 => 'heroicon-s-check-circle',
-                    2 => 'heroicon-s-wrench-screwdriver',
-                    3 => 'heroicon-s-pencil',
-                })
-                ->color(fn (int $state): string => match ($state) {
-                    0 => 'danger',
-                    1 => 'success',
-                    2 => 'gray',
-                    3 => 'info',
-                }),
+                TextColumn::make('status')
+                    ->badge()
+                    ->translateLabel(),
             ])
             ->filters([
                 //
@@ -133,9 +119,9 @@ class RoomsResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRooms::route('/'),
+            'index'  => Pages\ListRooms::route('/'),
             'create' => Pages\CreateRooms::route('/create'),
-            'edit' => Pages\EditRooms::route('/{record}/edit'),
+            'edit'   => Pages\EditRooms::route('/{record}/edit'),
         ];
     }
 }

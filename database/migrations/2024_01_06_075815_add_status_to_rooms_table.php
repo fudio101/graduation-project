@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\HouseRoomStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->tinyInteger('status')->default(1)->comment('0: inactive, 1: active, 2: pending, 3: registered');
+            $table->tinyInteger('status')->default(HouseRoomStatus::Inactive)->comment('0: inactive, 1: active, 2: pending, 3: registered');
         });
     }
 
