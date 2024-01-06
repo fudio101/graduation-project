@@ -73,7 +73,13 @@ class ServicesResource extends Resource
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('price'),
+                TextColumn::make('price')
+                ->label('Price (VNĐ)')
+                ->numeric(
+                    decimalPlaces: 0,
+                    decimalSeparator: '.',
+                    thousandsSeparator: ',',
+                ),
                 IconColumn::make('status')
                 ->boolean()
             ])
