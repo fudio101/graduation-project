@@ -17,7 +17,11 @@ class DistrictResource extends Resource
 {
     protected static ?string $model = District::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Administrative Unit';
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -33,7 +37,7 @@ class DistrictResource extends Resource
                     ->translateLabel(),
                 Forms\Components\TextInput::make('province_id')
                     ->translateLabel(),
-                ]);
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -41,7 +45,6 @@ class DistrictResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->searchable()
                     ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('name')
@@ -56,11 +59,9 @@ class DistrictResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('province_id')
-                    ->searchable()
-                    ->sortable()
+                Tables\Columns\TextColumn::make('province.name')
                     ->translateLabel(),
-                ])
+            ])
             ->filters([
             ])
             ->actions([
@@ -76,4 +77,9 @@ class DistrictResource extends Resource
             'index' => Pages\ManageDistricts::route('/'),
         ];
     }
+
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return static::getModel()::count();
+//    }
 }
