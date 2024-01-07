@@ -13,6 +13,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Filters\SelectFilter;
 
 class UserResource extends Resource
 {
@@ -26,7 +32,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\FileUpload::make('avatar_url')
+                FileUpload::make('avatar_url')
                     ->disk('public')
                     ->directory('user-avatars')
                     ->visibility('private')
@@ -49,7 +55,7 @@ class UserResource extends Resource
                     ->translateLabel()
                     ->helperText('Max. 2MB')
                     ->columnSpan('full'),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true)
@@ -57,17 +63,17 @@ class UserResource extends Resource
                     ->placeholder(__('Email'))
                     ->translateLabel()
                     ->disabled(fn(string $operation): bool => $operation !== 'create'),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->autofocus()
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('Name'))
                     ->translateLabel(),
-                Forms\Components\Select::make('role')
+                Select::make('role')
                     ->options(UserRole::class)
                     ->required()
                     ->translateLabel(),
-                Forms\Components\TextInput::make('password')
+                TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                     ->dehydrated(fn(?string $state): bool => filled($state))
@@ -88,43 +94,46 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('index')
+                TextColumn::make('index')
                     ->rowIndex()
                     ->translateLabel(),
-                Tables\Columns\ImageColumn::make('avatar_url')
+                ImageColumn::make('avatar_url')
                     ->visibility('private')
                     ->circular()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->copyable()
                     ->copyMessage('Email address copied')
                     ->copyMessageDuration(1500)
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('role')
+                TextColumn::make('role')
                     ->badge()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime('Y-m-d H:i:s', '+7')
-                    ->sortable()
-                    ->translateLabel(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('Y-m-d H:i:s', '+7')
-                    ->sortable()
-                    ->translateLabel(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime('Y-m-d H:i:s', '+7')
-                    ->sortable()
-                    ->translateLabel(),
+                TextColumn::make('houses_count')
+                    ->label('Count houses')
+                    ->counts('houses'),
+                // TextColumn::make('email_verified_at')
+                //     ->dateTime('Y-m-d H:i:s', '+7')
+                //     ->sortable()
+                //     ->translateLabel(),
+                // TextColumn::make('created_at')
+                //     ->dateTime('Y-m-d H:i:s', '+7')
+                //     ->sortable()
+                //     ->translateLabel(),
+                // TextColumn::make('updated_at')
+                //     ->dateTime('Y-m-d H:i:s', '+7')
+                //     ->sortable()
+                //     ->translateLabel(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('role')
+                SelectFilter::make('role')
                     ->options(UserRole::class)
                     ->multiple()
                     ->label(__('Role')),
