@@ -5,11 +5,11 @@ namespace App\Filament\Resources;
 use App\Enums\HouseRoomStatus;
 use App\Filament\Resources\RoomsResource\Pages;
 use App\Filament\Resources\RoomsResource\RelationManagers;
+use App\Filament\Resources\RoomsResource\RelationManagers\ServicesRelationManager;
 use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\House;
-use BladeUI\Icons\Components\Icon;
-use Filament\Forms;
+use App\Models\Service;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -20,9 +20,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-
 class RoomsResource extends Resource
 {
     protected static ?string $model = Room::class;
@@ -73,6 +72,19 @@ class RoomsResource extends Resource
                     ->default(HouseRoomStatus::Inactive)
                     ->required()
                     ->translateLabel(),
+            //     Section::make('Services')->schema([
+            //         Select::make('services')
+            //             ->relationship('services', 'name')
+            //             ->options(function () {
+            //                 return Service::pluck('name', 'id');
+            //             })
+            //             ->multiple()
+            //             ->translateLabel(),
+            //         // TextInput::make('quantity')
+            //         //     ->label('Quantity')
+            //         //     ->type('number')
+            //         //     ->translateLabel(),
+            //     ]),
             ]);
     }
 
@@ -112,7 +124,7 @@ class RoomsResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ServicesRelationManager::class,
         ];
     }
 

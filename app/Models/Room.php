@@ -47,4 +47,9 @@ class Room extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'room_services')->withPivot('quantity');
+    }
 }

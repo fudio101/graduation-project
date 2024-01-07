@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ServicesResource\Pages;
 use App\Filament\Resources\ServicesResource\RelationManagers;
-use App\Models\Services;
+use App\Models\Service;
 use Faker\Core\Color;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ServicesResource extends Resource
 {
-    protected static ?string $model = Services::class;
+    protected static ?string $model = Service::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -62,7 +62,8 @@ class ServicesResource extends Resource
                 ->options([
                     '1' => 'Active',
                     '0' => 'Inactive',
-                ]),
+                ])
+                ->default('1'),
             ]);
     }
 
