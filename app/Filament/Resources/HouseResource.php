@@ -5,24 +5,22 @@ namespace App\Filament\Resources;
 use App\Enums\HouseRoomStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\HouseResource\Pages;
-use App\Models\User;
 use App\Models\District;
 use App\Models\House;
-use App\Models\Room;
 use App\Models\Province;
+use App\Models\User;
 use App\Models\Ward;
-use Filament\Forms;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Table;
 
 class HouseResource extends Resource
 {
@@ -66,7 +64,7 @@ class HouseResource extends Resource
                     ->options(Province::all()->pluck('name', 'id'))
                     ->searchable()
                     ->preload()
-                    ->afterStateUpdated(function (Forms\Set $set) {
+                    ->afterStateUpdated(function (Set $set) {
                         $set('district_id', null);
                         $set('ward_id', null);
                     })
@@ -75,7 +73,7 @@ class HouseResource extends Resource
                     ->translateLabel(),
                 Select::make('district_id')
                     ->label('District')
-                    ->options(function (Forms\Get $get) {
+                    ->options(function (Get $get) {
                         $provinces = Province::find($get('province_id'));
 
                         if (!$provinces) {
