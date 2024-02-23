@@ -10,6 +10,15 @@ class Province extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'division_type',
+        'code_name',
+        'phone_code',
+    ];
+
     public function districts(): HasMany
     {
         return $this->hasMany(District::class);

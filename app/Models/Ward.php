@@ -10,6 +10,16 @@ class Ward extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'division_type',
+        'code_name',
+        'short_code_name',
+        'district_id',
+    ];
+
     public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
