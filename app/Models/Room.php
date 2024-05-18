@@ -52,4 +52,10 @@ class Room extends Model
     {
         return $this->belongsToMany(Service::class, 'room_services')->withPivot('quantity');
     }
+
+    // Thiết lập mối quan hệ với Contract
+    public function contracts()
+    {
+        return $this->hasOne(Contract::class);
+    }
 }

@@ -67,4 +67,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
         return $this->hasMany(House::class, 'manager_id');
     }
+
+     // Thiết lập mối quan hệ với Contract
+    public function contracts()
+    {
+        return $this->hasOne(Contract::class, 'member_id');
+    }
 }
