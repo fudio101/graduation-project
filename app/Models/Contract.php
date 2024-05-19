@@ -10,6 +10,7 @@ class Contract extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'room_id',
         'member_id',
@@ -20,6 +21,9 @@ class Contract extends Model
     protected $casts = [
         'status' => HouseRoomStatus::class,
     ];
+
+    public static $ACTIVE   = 1;
+    public static $INACTIVE = 0;
 
     // Thiết lập mối quan hệ với User
     public function member()
