@@ -12,9 +12,8 @@ class PdfController extends Controller
     public function __invoke($contract)
     {
         $contract = Contract::find($contract)->with('room')->first();
-        // dd($contract->room->house->province->name);
         
-        $now = Carbon::now();
+        $now  = Carbon::now();
         $date = $this->getDayVN($now);
 
         $pdf = Pdf::loadView('contract_pdf', ['contract' => $contract, 'date' => $date]);
@@ -25,7 +24,7 @@ class PdfController extends Controller
 
     public function getDayVN($time)
     {
-         $daysOfWeek = [
+        $daysOfWeek = [
             'Chủ Nhật',
             'Thứ Hai',
             'Thứ Ba',

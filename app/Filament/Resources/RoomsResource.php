@@ -10,6 +10,7 @@ use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\House;
 use App\Models\Service;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,6 +23,8 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Toggle;
+
 class RoomsResource extends Resource
 {
     protected static ?string $model = Room::class;
@@ -71,7 +74,21 @@ class RoomsResource extends Resource
                     ->inline()
                     ->default(HouseRoomStatus::Inactive)
                     ->required()
-                    ->translateLabel(),
+                    ->reactive()
+                    ->afterStateUpdated(function (?string $state, callable $set) use ($form) {
+                        if ($state == 0) {
+                            $set('checked', 0);
+                        } else {
+                            $set('checked', 1);
+                        }
+                    })
+                    ->translateLabel()
+                    ->hidden(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+                Toggle::make('checked')
+                    ->label('Checked')
+                    ->translateLabel()
+                    ->hidden(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+                        // ->disabled(),
             //     Section::make('Services')->schema([
             //         Select::make('services')
             //             ->relationship('services', 'name')

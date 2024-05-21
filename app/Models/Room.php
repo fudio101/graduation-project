@@ -22,7 +22,11 @@ class Room extends Model
         'room_type_id',
         'house_id',
         'description',
+        'checked',
     ];
+
+    public static $STATUS_ACTIVE   = 1;
+    public static $STATUS_INACTIVE = 0;
 
     /**
      * The attributes that should be cast.
@@ -57,5 +61,10 @@ class Room extends Model
     public function contracts()
     {
         return $this->hasOne(Contract::class);
+    }
+
+    public function isStatusActive()
+    {
+        return $this->checked;
     }
 }
