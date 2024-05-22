@@ -4,33 +4,37 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProvinceResource\Pages;
 use App\Models\Province;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class ProvinceResource extends Resource
 {
     protected static ?string $model = Province::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Administrative Unit';
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+
+    protected static ?int $navigationSort = 0;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
+                TextInput::make('id')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('division_type')
+                TextInput::make('division_type')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('code_name')
+                TextInput::make('code_name')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('phone_code')
+                TextInput::make('phone_code')
                     ->translateLabel(),
             ]);
     }
@@ -39,23 +43,22 @@ class ProvinceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('id')
+                    ->sortable()
+                    ->translateLabel(),
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('division_type')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('division_type')
+                TextColumn::make('code_name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('code_name')
-                    ->searchable()
-                    ->sortable()
-                    ->translateLabel(),
-                Tables\Columns\TextColumn::make('phone_code')
+                TextColumn::make('phone_code')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
@@ -75,4 +78,9 @@ class ProvinceResource extends Resource
             'index' => Pages\ManageProvinces::route('/'),
         ];
     }
+
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return static::getModel()::count();
+//    }
 }

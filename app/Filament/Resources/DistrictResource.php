@@ -3,64 +3,72 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DistrictResource\Pages;
-use App\Filament\Resources\DistrictResource\RelationManagers;
 use App\Models\District;
+use App\Models\Province;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DistrictResource extends Resource
 {
     protected static ?string $model = District::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Administrative Unit';
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
+                TextInput::make('id')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('division_type')
+                TextInput::make('division_type')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('code_name')
+                TextInput::make('code_name')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('province_id')
+                Select::make('province_id')
+                    ->relationship('province', 'name')
+                    ->required()
+                    ->placeholder(__('Province'))
+                    ->options(function () {
+                        return Province::pluck('name', 'id');
+                    })
                     ->translateLabel(),
-                ]);
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('id')
+                    ->sortable()
+                    ->translateLabel(),
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('division_type')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('division_type')
+                TextColumn::make('code_name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('code_name')
-                    ->searchable()
-                    ->sortable()
+                TextColumn::make('province.name')
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('province_id')
-                    ->searchable()
-                    ->sortable()
-                    ->translateLabel(),
-                ])
+            ])
             ->filters([
             ])
             ->actions([
@@ -76,4 +84,9 @@ class DistrictResource extends Resource
             'index' => Pages\ManageDistricts::route('/'),
         ];
     }
+
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return static::getModel()::count();
+//    }
 }

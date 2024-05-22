@@ -10,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HousesRelationManager extends RelationManager
 {
@@ -93,13 +91,10 @@ class HousesRelationManager extends RelationManager
                     ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('province.name')
-                    ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('district.name')
-                    ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('ward.name')
-                    ->sortable()
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('address')
                     ->sortable()

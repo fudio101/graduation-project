@@ -2,54 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Http;
-use Sushi\Sushi;
 
 class District extends Model
 {
-    use Sushi;
+    use HasFactory;
 
-    protected array $schema = [
-        'id' => 'integer',
-        'code' => 'integer',
-        'name' => 'string',
-        'division_type' => 'string',
-        'code_name' => 'string',
-        'province_id' => 'integer',
+    public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'division_type',
+        'code_name',
+        'short_code_name',
+        'province_id',
     ];
-
-    /**
-     * Model Rows
-     *
-     * @return array
-     */
-    public function getRows(): array
-    {
-        //API
-        $provinces = Http::get('https://provinces.open-api.vn/api/d/')->json();
-
-        //filtering some attributes
-        return Arr::map($provinces, function ($item) {
-            $item['id'] = $item['code'];
-            $item['code_name'] = $item['codename'];
-            $item['province_id'] = $item['province_code'];
-
-            return Arr::only($item,
-                [
-                    'id',
-                    'code',
-                    'name',
-                    'division_type',
-                    'code_name',
-                    'province_id',
-                ]
-            );
-        });
-    }
 
     public function province(): BelongsTo
     {
@@ -59,10 +29,5 @@ class District extends Model
     public function wards(): HasMany
     {
         return $this->hasMany(Ward::class);
-    }
-
-    protected function sushiShouldCache(): bool
-    {
-        return true;
     }
 }

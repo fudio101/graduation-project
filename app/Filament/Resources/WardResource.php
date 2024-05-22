@@ -3,35 +3,45 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WardResource\Pages;
-use App\Filament\Resources\WardResource\RelationManagers;
+use App\Models\District;
 use App\Models\Ward;
-use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class WardResource extends Resource
 {
     protected static ?string $model = Ward::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Administrative Unit';
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-library';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
+                TextInput::make('id')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('division_type')
+                TextInput::make('division_type')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('code_name')
+                TextInput::make('code_name')
                     ->translateLabel(),
-                Forms\Components\TextInput::make('district_id')
+                Select::make('district_id')
+                    ->relationship('district', 'name')
+                    ->required()
+                    ->placeholder(__('District'))
+                    ->options(function () {
+                        return District::pluck('name', 'id');
+                    })
                     ->translateLabel(),
             ]);
     }
@@ -40,25 +50,22 @@ class WardResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('id')
+                    ->sortable()
+                    ->translateLabel(),
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('division_type')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('division_type')
+                TextColumn::make('code_name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
-                Tables\Columns\TextColumn::make('code_name')
-                    ->searchable()
-                    ->sortable()
-                    ->translateLabel(),
-                Tables\Columns\TextColumn::make('district_id')
-                    ->searchable()
-                    ->sortable()
+                TextColumn::make('district.name')
                     ->translateLabel(),
             ])
             ->filters([
@@ -76,4 +83,9 @@ class WardResource extends Resource
             'index' => Pages\ManageWards::route('/'),
         ];
     }
+
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return static::getModel()::count();
+//    }
 }
