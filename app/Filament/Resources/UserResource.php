@@ -7,18 +7,18 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\HousesRelationManager;
 use App\Models\User;
 use Exception;
-use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Support\Facades\Hash;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\FileUpload;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -151,6 +151,25 @@ class UserResource extends Resource
             ->recordUrl(null);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        return User::query()->when($user->role !== UserRole::Admin, function ($query) use ($user) {
+            $query->where(function ($query) use ($user) {
+                $query->where('id', $user->id);
+
+                if ($user->role === UserRole::Owner) {
+                    $query->orWhereIn('role', [UserRole::Manager, UserRole::NormalUser]);
+                }
+
+                if ($user->role === UserRole::Manager) {
+                    $query->orWhere('role', UserRole::NormalUser);
+                }
+            });
+        });
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -161,14 +180,14 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
+            'index'  => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'edit'   => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return static::getEloquentQuery()->count();
     }
 }
