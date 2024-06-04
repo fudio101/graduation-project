@@ -1,40 +1,28 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Enums\HouseRoomStatus;
-use App\Filament\Resources\RoomsResource\Pages;
-use App\Filament\Resources\RoomsResource\RelationManagers;
-use App\Filament\Resources\RoomsResource\RelationManagers\ServicesRelationManager;
-use App\Models\Room;
-use App\Models\RoomType;
+use App\Enums\UserRole;
 use App\Models\House;
-use App\Models\Service;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\RichEditor;
+use App\Models\RoomType;
+use App\Models\User;
 use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Section;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-class RoomsResource extends Resource
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+
+class RoomsRelationManager extends RelationManager
 {
-    protected static ?string $model = Room::class;
+    protected static string $relationship = 'rooms';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    // Change name in page header navigation
-    protected static ?string $navigationGroup = 'House and Room Management';
-
-    // Sort order in navigation
-    protected static ?int $navigationSort = 2;
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -72,25 +60,13 @@ class RoomsResource extends Resource
                     ->default(HouseRoomStatus::Inactive)
                     ->required()
                     ->translateLabel(),
-            //     Section::make('Services')->schema([
-            //         Select::make('services')
-            //             ->relationship('services', 'name')
-            //             ->options(function () {
-            //                 return Service::pluck('name', 'id');
-            //             })
-            //             ->multiple()
-            //             ->translateLabel(),
-            //         // TextInput::make('quantity')
-            //         //     ->label('Quantity')
-            //         //     ->type('number')
-            //         //     ->translateLabel(),
-            //     ]),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
                     ->label('Name room')
@@ -111,8 +87,12 @@ class RoomsResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -121,19 +101,8 @@ class RoomsResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
+    public static function canViewForRecord(User|Model $user, string $pageClass): bool
     {
-        return [
-            ServicesRelationManager::class,
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index'  => Pages\ListRooms::route('/'),
-            'create' => Pages\CreateRooms::route('/create'),
-            'edit'   => Pages\EditRooms::route('/{record}/edit'),
-        ];
+        return $user->role === UserRole::Manager;
     }
 }

@@ -66,29 +66,18 @@ class UserPolicy
 
     private function baseAuthorize(User $user, User $model): Response
     {
-        if ($user->role === UserRole::Admin) {
+        if ($user->role === UserRole::Admin || $user->id === $model->id) {
             return Response::allow();
         }
 
-        if ($user->role === UserRole::Owner) {
-            if ($model->role === UserRole::Owner && $user->id === $model->id) {
-                return Response::allow();
-            }
-            if (in_array($model->role, [UserRole::Manager, UserRole::NormalUser])) {
-                return Response::allow();
-            }
+        if ($user->role === UserRole::Owner && (
+                $model->role === UserRole::NormalUser
+                || ($model->role === UserRole::Manager && $model->rooms->load(['house' => fn($query) => $query->where('owner_id', $model->id)])->count() > 0)
+            )) {
+            return Response::allow();
         }
 
-        if ($user->role === UserRole::Manager) {
-            if ($model->role === UserRole::Manager && $user->id === $model->id) {
-                return Response::allow();
-            }
-            if ($model->role === UserRole::NormalUser) {
-                return Response::allow();
-            }
-        }
-
-        if ($user->role === UserRole::NormalUser && $user->id === $model->id) {
+        if ($user->role === UserRole::Manager && $model->role === UserRole::NormalUser) {
             return Response::allow();
         }
 

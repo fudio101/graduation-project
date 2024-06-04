@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\HousesRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\RoomsRelationManager;
 use App\Models\User;
 use Exception;
 use Filament\Forms\Components\FileUpload;
@@ -155,25 +156,34 @@ class UserResource extends Resource
     {
         $user = auth()->user();
 
-        return User::query()->when($user->role !== UserRole::Admin, function ($query) use ($user) {
-            $query->where(function ($query) use ($user) {
-                $query->where('id', $user->id);
+        if ($user->role === UserRole::Admin) {
+            return User::query();
+        }
 
-                if ($user->role === UserRole::Owner) {
-                    $query->orWhereIn('role', [UserRole::Manager, UserRole::NormalUser]);
-                }
+        $query = User::query()->where('id', $user->id);
 
-                if ($user->role === UserRole::Manager) {
-                    $query->orWhere('role', UserRole::NormalUser);
-                }
-            });
-        });
+        if ($user->role === UserRole::Owner) {
+            $query->orWhere('role', UserRole::NormalUser)
+                ->orWhere(function ($query) use ($user) {
+                    $query->where('role', UserRole::Manager)
+                        ->whereHas('rooms.house', function ($query) use ($user) {
+                            $query->where('owner_id', $user->id);
+                        });
+                });
+        }
+
+        if ($user->role === UserRole::Manager) {
+            $query->orWhere('role', UserRole::NormalUser);
+        }
+
+        return $query;
     }
 
     public static function getRelations(): array
     {
         return [
             HousesRelationManager::class,
+            RoomsRelationManager::class,
         ];
     }
 

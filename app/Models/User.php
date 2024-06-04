@@ -62,14 +62,22 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        if (str_starts_with($this->avatar, 'http')) {
-            return $this->avatar;
+        if (!$this->avatar_url) {
+            return null;
+        }
+        if (str_starts_with($this->avatar_url, 'http')) {
+            return $this->avatar_url;
         }
         return Storage::url($this->avatar_url);
     }
 
     public function houses(): HasMany
     {
-        return $this->hasMany(House::class, 'manager_id');
+        return $this->hasMany(House::class, 'owner_id');
+    }
+
+    public function rooms(): HasMany
+    {
+        return $this->hasMany(Room::class, 'manager_id');
     }
 }

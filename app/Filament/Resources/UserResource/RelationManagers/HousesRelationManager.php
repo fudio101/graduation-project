@@ -2,14 +2,23 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use App\Enums\HouseRoomStatus;
+use App\Enums\UserRole;
 use App\Models\District;
 use App\Models\Province;
+use App\Models\User;
 use App\Models\Ward;
-use Filament\Forms;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class HousesRelationManager extends RelationManager
 {
@@ -19,30 +28,35 @@ class HousesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->label('Name house')
                     ->autofocus()
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('Name'))
                     ->translateLabel(),
-                Forms\Components\RichEditor::make('description')
+                RichEditor::make('description')
                     ->maxLength(65535)
                     ->columnSpan('full')
                     ->placeholder(__('Description'))
                     ->translateLabel(),
-                Forms\Components\Select::make('province_id')
+                Select::make('province_id')
+                    ->required()
+                    ->label('Province')
                     ->options(Province::all()->pluck('name', 'id'))
                     ->searchable()
                     ->preload()
-                    ->afterStateUpdated(function (Forms\Set $set) {
+                    ->afterStateUpdated(function (Set $set) {
                         $set('district_id', null);
                         $set('ward_id', null);
                     })
                     ->live(debounce: 1)
                     ->placeholder(__('Province'))
                     ->translateLabel(),
-                Forms\Components\Select::make('district_id')
-                    ->options(function (Forms\Get $get) {
+                Select::make('district_id')
+                    ->required()
+                    ->label('District')
+                    ->options(function (Get $get) {
                         $provinces = Province::find($get('province_id'));
 
                         if (!$provinces) {
@@ -56,7 +70,9 @@ class HousesRelationManager extends RelationManager
                     ->live(debounce: 1)
                     ->placeholder(__('District'))
                     ->translateLabel(),
-                Forms\Components\Select::make('ward_id')
+                Select::make('ward_id')
+                    ->required()
+                    ->label('Ward')
                     ->options(function (callable $get) {
                         $districts = District::find($get('district_id'));
 
@@ -69,11 +85,18 @@ class HousesRelationManager extends RelationManager
                     ->preload()
                     ->placeholder(__('Ward'))
                     ->translateLabel(),
-                Forms\Components\TextInput::make('address')
+                TextInput::make('address')
                     ->autofocus()
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('Address'))
+                    ->translateLabel(),
+                Radio::make('status')
+                    ->options(HouseRoomStatus::class)
+                    ->inline()
+                    ->columnSpan('full')
+                    ->default(HouseRoomStatus::Inactive)
+                    ->required()
                     ->translateLabel(),
             ]);
     }
@@ -123,5 +146,10 @@ class HousesRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function canViewForRecord(User|Model $user, string $pageClass): bool
+    {
+        return $user->role === UserRole::Owner;
     }
 }
