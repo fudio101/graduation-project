@@ -22,7 +22,7 @@ class RoomPolicy
      */
     public function view(User $user, Room $room): Response
     {
-        return $this->baseAuthorize($user, $room);
+        return $this->baseAuthorize($user, $room, 'view');
     }
 
     /**
@@ -30,7 +30,7 @@ class RoomPolicy
      */
     public function create(User $user): Response
     {
-        return in_array($user->role, [UserRole::Admin, UserRole::Owner, UserRole::Manager]) ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -38,7 +38,7 @@ class RoomPolicy
      */
     public function update(User $user, Room $room): Response
     {
-        return $this->baseAuthorize($user, $room);
+        return $this->baseAuthorize($user, $room, 'update');
     }
 
     /**
@@ -46,7 +46,7 @@ class RoomPolicy
      */
     public function delete(User $user, Room $room): Response
     {
-        return $this->baseAuthorize($user, $room);
+        return $this->baseAuthorize($user, $room, 'delete');
     }
 
     /**
@@ -54,7 +54,7 @@ class RoomPolicy
      */
     public function restore(User $user, Room $room): Response
     {
-        return $this->baseAuthorize($user, $room);
+        return $this->baseAuthorize($user, $room, 'restore');
     }
 
     /**
@@ -62,10 +62,10 @@ class RoomPolicy
      */
     public function forceDelete(User $user, Room $room): Response
     {
-        return $this->baseAuthorize($user, $room);
+        return $this->baseAuthorize($user, $room, 'forceDelete');
     }
 
-    private function baseAuthorize(User $user, Room $room): Response
+    private function baseAuthorize(User $user, Room $room, string $action): Response
     {
         if ($user->role === UserRole::Admin) {
             return Response::allow();
@@ -75,7 +75,7 @@ class RoomPolicy
             return $room->house->owner_id === $user->id ? Response::allow() : Response::deny();
         }
 
-        if ($user->role === UserRole::Manager) {
+        if ($user->role === UserRole::Manager && $action === 'view') {
             return $room->manager_id === $user->id ? Response::allow() : Response::deny();
         }
 

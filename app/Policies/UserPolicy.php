@@ -21,7 +21,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): Response
     {
-        return $this->baseAuthorize($user, $model);
+        return $this->baseAuthorize($user, $model, 'view');
     }
 
     /**
@@ -37,7 +37,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): Response
     {
-        return $this->baseAuthorize($user, $model);
+        return $this->baseAuthorize($user, $model, 'update');
     }
 
     /**
@@ -45,7 +45,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): Response
     {
-        return $this->baseAuthorize($user, $model);
+        return $this->baseAuthorize($user, $model, 'delete');
     }
 
     /**
@@ -53,7 +53,7 @@ class UserPolicy
      */
     public function restore(User $user, User $model): Response
     {
-        return $this->baseAuthorize($user, $model);
+        return $this->baseAuthorize($user, $model, 'restore');
     }
 
     /**
@@ -61,20 +61,27 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): Response
     {
-        return $this->baseAuthorize($user, $model);
+        return $this->baseAuthorize($user, $model, 'forceDelete');
     }
 
-    private function baseAuthorize(User $user, User $model): Response
+    private function baseAuthorize(User $user, User $model, string $action): Response
     {
-        if ($user->role === UserRole::Admin || $user->id === $model->id) {
+        if ($user->role === UserRole::Admin || $user->id === $model->id && $action === 'view') {
             return Response::allow();
         }
 
-        if ($user->role === UserRole::Owner && (
-                $model->role === UserRole::NormalUser
-                || ($model->role === UserRole::Manager && $model->rooms->load(['house' => fn($query) => $query->where('owner_id', $model->id)])->count() > 0)
-            )) {
-            return Response::allow();
+        if ($user->role === UserRole::Owner) {
+            if ($model->role === UserRole::NormalUser) {
+                return Response::allow();
+            }
+            if ($model->role === UserRole::Manager) {
+                if ($model->rooms->load(['house' => fn($query) => $query->where('owner_id', $user->id)])->count() > 0) {
+                    return Response::allow();
+                }
+                if ($model->rooms->count() === 0) {
+                    return Response::allow();
+                }
+            }
         }
 
         if ($user->role === UserRole::Manager && $model->role === UserRole::NormalUser) {

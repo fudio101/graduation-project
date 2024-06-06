@@ -31,6 +31,38 @@ class UserResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $operation = $form->getOperation();
+        $user = auth()->user();
+        $roles = [];
+
+        switch ($user->role) {
+            case UserRole::Admin:
+                $roles = [
+                    UserRole::Admin->value      => UserRole::Admin->getLabel(),
+                    UserRole::Owner->value      => UserRole::Owner->getLabel(),
+                    UserRole::Manager->value    => UserRole::Manager->getLabel(),
+                    UserRole::NormalUser->value => UserRole::NormalUser->getLabel(),
+                ];
+                break;
+            case UserRole::Owner:
+                $roles = [
+                    UserRole::Manager->value    => UserRole::Manager->getLabel(),
+                    UserRole::NormalUser->value => UserRole::NormalUser->getLabel(),
+                ];
+                if ($operation === 'view') {
+                    $roles[UserRole::Owner->value] = UserRole::Owner->getLabel();
+                }
+                break;
+            case UserRole::Manager:
+                $roles = [
+                    UserRole::NormalUser->value => UserRole::NormalUser->getLabel(),
+                ];
+                if ($operation === 'view') {
+                    $roles[UserRole::Manager->value] = UserRole::Manager->getLabel();
+                }
+                break;
+        }
+
         return $form
             ->schema([
                 FileUpload::make('avatar_url')
@@ -71,7 +103,7 @@ class UserResource extends Resource
                     ->placeholder(__('Name'))
                     ->translateLabel(),
                 Select::make('role')
-                    ->options(UserRole::class)
+                    ->options($roles)
                     ->required()
                     ->translateLabel(),
                 TextInput::make('password')
@@ -83,7 +115,7 @@ class UserResource extends Resource
                     ->minLength(8)
                     ->placeholder(__('Password'))
                     ->translateLabel()
-                    ->helperText('Let this blank if you don\'t want to change the password.')
+                    ->helperText(fn(string $operation): string => $operation === 'update' ? 'Leave this blank if you don\'t want to change the password.' : '')
                     ->hidden(fn(string $operation): bool => $operation === 'view'),
             ]);
     }
@@ -155,25 +187,34 @@ class UserResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
+        $query = User::query();
 
         if ($user->role === UserRole::Admin) {
-            return User::query();
+            return $query;
         }
 
-        $query = User::query()->where('id', $user->id);
 
         if ($user->role === UserRole::Owner) {
-            $query->orWhere('role', UserRole::NormalUser)
-                ->orWhere(function ($query) use ($user) {
-                    $query->where('role', UserRole::Manager)
-                        ->whereHas('rooms.house', function ($query) use ($user) {
-                            $query->where('owner_id', $user->id);
-                        });
-                });
+            $query->where(function (Builder $query) use ($user) {
+                $query->orWhere('id', $user->id)
+                    ->orWhere('role', UserRole::NormalUser)
+                    ->orWhere(function (Builder $query) use ($user) {
+                        $query->where('role', UserRole::Manager)
+                            ->where(function (Builder $query) use ($user) {
+                                $query->orWhereDoesntHave('rooms')
+                                    ->orWhereHas('rooms.house', function (Builder $query) use ($user) {
+                                        $query->where('owner_id', $user->id);
+                                    });
+                            });
+                    });
+            });
         }
 
         if ($user->role === UserRole::Manager) {
-            $query->orWhere('role', UserRole::NormalUser);
+            $query->where(function (Builder $query) use ($user) {
+                $query->orWhere('id', $user->id)
+                    ->orWhere('role', UserRole::NormalUser);
+            });
         }
 
         return $query;

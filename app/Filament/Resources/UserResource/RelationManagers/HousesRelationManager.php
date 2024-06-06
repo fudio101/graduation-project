@@ -148,8 +148,8 @@ class HousesRelationManager extends RelationManager
             ]);
     }
 
-    public static function canViewForRecord(User|Model $user, string $pageClass): bool
+    public static function canViewForRecord(User|Model $ownerRecord, string $pageClass): bool
     {
-        return $user->role === UserRole::Owner;
+        return $ownerRecord->role === UserRole::Owner;
     }
 }

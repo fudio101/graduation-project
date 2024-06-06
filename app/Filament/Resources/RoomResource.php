@@ -135,24 +135,24 @@ class RoomResource extends Resource
     }
 
     public static function getEloquentQuery(): Builder
-{
-    $user = auth()->user();
-    $query = Room::query();
+    {
+        $user = auth()->user();
+        $query = Room::query();
 
-    if ($user->role !== UserRole::Admin) {
-        if ($user->role === UserRole::Owner) {
-            $query->whereHas('house', function ($query) use ($user) {
-                $query->where('owner_id', $user->id);
-            });
+        if ($user->role !== UserRole::Admin) {
+            if ($user->role === UserRole::Owner) {
+                $query->whereHas('house', function (Builder $query) use ($user) {
+                    $query->where('owner_id', $user->id);
+                });
+            }
+
+            if ($user->role === UserRole::Manager) {
+                $query->where('manager_id', $user->id);
+            }
         }
 
-        if ($user->role === UserRole::Manager) {
-            $query->where('manager_id', $user->id);
-        }
+        return $query;
     }
-
-    return $query;
-}
 
     public static function getRelations(): array
     {

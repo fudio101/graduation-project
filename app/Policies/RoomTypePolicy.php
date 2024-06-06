@@ -14,7 +14,7 @@ class RoomTypePolicy
      */
     public function viewAny(User $user): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -22,7 +22,7 @@ class RoomTypePolicy
      */
     public function view(User $user, RoomType $roomType): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -30,7 +30,7 @@ class RoomTypePolicy
      */
     public function create(User $user): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -38,7 +38,7 @@ class RoomTypePolicy
      */
     public function update(User $user, RoomType $roomType): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -46,7 +46,7 @@ class RoomTypePolicy
      */
     public function delete(User $user, RoomType $roomType): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -54,7 +54,7 @@ class RoomTypePolicy
      */
     public function restore(User $user, RoomType $roomType): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 
     /**
@@ -62,6 +62,6 @@ class RoomTypePolicy
      */
     public function forceDelete(User $user, RoomType $roomType): Response
     {
-        return $user->role === UserRole::Admin ? Response::allow() : Response::deny();
+        return in_array($user->role, [UserRole::Admin, UserRole::Owner]) ? Response::allow() : Response::deny();
     }
 }

@@ -101,8 +101,8 @@ class RoomsRelationManager extends RelationManager
             ]);
     }
 
-    public static function canViewForRecord(User|Model $user, string $pageClass): bool
+    public static function canViewForRecord(User|Model $ownerRecord, string $pageClass): bool
     {
-        return $user->role === UserRole::Manager;
+        return $ownerRecord->role === UserRole::Manager;
     }
 }
