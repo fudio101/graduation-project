@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\HouseRoomStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\HouseResource\Pages;
+use App\Filament\Resources\HouseResource\RelationManagers\RoomsRelationManager;
 use App\Models\District;
 use App\Models\House;
 use App\Models\Province;
@@ -21,6 +22,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class HouseResource extends Resource
 {
@@ -45,12 +47,12 @@ class HouseResource extends Resource
                     ->maxLength(255)
                     ->placeholder(__('Name'))
                     ->translateLabel(),
-                Select::make('manager_id')
-                    ->relationship('manager', 'name')
+                Select::make('owner_id')
+                    ->relationship('owner', 'name')
                     ->required()
-                    ->placeholder(__('Select Manager'))
+                    ->placeholder(__('Select Owner'))
                     ->options(function () {
-                        return User::whereIn('role', [UserRole::Admin, UserRole::Owner, UserRole::Manager])->pluck('name', 'id');
+                        return User::where('role', UserRole::Owner)->pluck('name', 'id');
                     })
                     ->translateLabel(),
                 RichEditor::make('description')
@@ -72,6 +74,7 @@ class HouseResource extends Resource
                     ->placeholder(__('Province'))
                     ->translateLabel(),
                 Select::make('district_id')
+                    ->required()
                     ->label('District')
                     ->options(function (Get $get) {
                         $provinces = Province::find($get('province_id'));
@@ -88,6 +91,7 @@ class HouseResource extends Resource
                     ->placeholder(__('District'))
                     ->translateLabel(),
                 Select::make('ward_id')
+                    ->required()
                     ->label('Ward')
                     ->options(function (callable $get) {
                         $districts = District::find($get('district_id'));
@@ -133,11 +137,7 @@ class HouseResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->translateLabel(),
-                TextColumn::make('manager.name')
-                    ->searchable()
-                    ->sortable()
-                    ->translateLabel(),
-                TextColumn::make('manager.name')
+                TextColumn::make('owner.name')
                     ->searchable()
                     ->sortable()
                     ->translateLabel(),
@@ -176,10 +176,25 @@ class HouseResource extends Resource
             ->recordUrl(null);
     }
 
+public static function getEloquentQuery(): Builder
+{
+    $user = auth()->user();
+
+    if ($user->role === UserRole::Admin) {
+        return House::query();
+    }
+
+    if ($user->role === UserRole::Owner) {
+        return House::query()->where('owner_id', $user->id);
+    }
+
+    return House::query();
+}
+
     public static function getRelations(): array
     {
         return [
-            //
+            RoomsRelationManager::class
         ];
     }
 

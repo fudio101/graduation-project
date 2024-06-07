@@ -24,7 +24,7 @@ class House extends Model
         'ward_id',
         'address',
         'description',
-        'manager_id',
+        'owner_id',
     ];
 
     /**
@@ -36,14 +36,14 @@ class House extends Model
         'status' => HouseRoomStatus::class,
     ];
 
-    public function manager(): BelongsTo
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     public function rooms(): HasMany
     {
-        return $this->hasMany(Room::class);
+        return $this->hasMany(Room::class, 'house_id');
     }
 
     public function province(): BelongsTo
