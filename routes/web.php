@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ContractController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +23,5 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return redirect(route('filament.admin.auth.login'));
 })->name('login');
+
+Route::get('pdf/{order}', PdfController::class)->name('pdf'); 
