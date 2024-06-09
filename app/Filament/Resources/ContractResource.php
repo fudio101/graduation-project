@@ -25,13 +25,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Actions\Action;
 use Closure;
 use Filament\Forms\Get;
+use App\Models\ContractEnd;
+use Illuminate\Support\Facades\DB;
 
 class ContractResource extends Resource
 {
     protected static ?string $model = Contract::class;
 
     protected static ?string $navigationGroup = 'Contract Management';
-
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -65,6 +66,8 @@ class ContractResource extends Resource
                         $is_checked_room = $data_room->isStatusActive();
                         if ($is_checked_room) {
                             $fail('This room is not available');
+                        } else {
+                            Room::where('id', $data_room->id)->update(['status' => 1, 'checked' => 1]);
                         }
                     },
                 ])
@@ -112,18 +115,59 @@ class ContractResource extends Resource
                 ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('end-contract') 
+                ->label('END')
+                ->color('info')
+                ->action(function (array $data, Contract $record): void {
+                    DB::beginTransaction();
+                    try {
+                        // Tìm phòng và cập nhật trạng thái phòng
+                        $room = Room::find($record->room_id);
+                        if (!$room) {
+                            throw new Exception('Room not found');
+                        }
+                        $room->update(['status' => 0, 'checked' => 0]);
+                
+                        // Tìm hợp đồng và cập nhật trạng thái hợp đồng
+                        $contract = Contract::find($record->id);
+                        if (!$contract) {
+                            throw new Exception('Contract not found');
+                        }
+                        $contract->update([
+                            'status' => 0,
+                            'start_date' => null,
+                            'end_date' => null,
+                            'member_id' => null,
+                        ]);
+                
+                        // Tạo bản ghi mới trong ContractEnd
+                        $contract_end = new ContractEnd();
+                        $contract_end->room_id = $record->room_id;
+                        $contract_end->member_id = $record->member_id;
+                        $contract_end->start_date = $record->start_date;
+                        $contract_end->end_date = $record->end_date;
+                        $contract_end->termination_date = now();
+                        $contract_end->description = 'End Contract';
+                        $contract_end->save();
+
+                        DB::commit();
+                    } catch (Exception $e) {
+                        DB::rollBack();
+                        // Xử lý ngoại lệ
+                        Log::error('Failed to end contract: ' . $e->getMessage());
+                        throw $e; // Hoặc bạn có thể tùy chỉnh thông báo lỗi gửi đến người dùng
+                    }
+                })
+                ->visible(function (Contract $record): bool {
+                    return $record->status->value === 1;
+                })
+                ->requiresConfirmation(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('pdf') 
                     ->label('PDF')
                     ->color('success')
                     ->url(fn (Contract $record) => route('pdf', $record))
-                    ->openUrlInNewTab(),
-                Tables\Actions\Action::make('end-contract') 
-                    ->label('END')
-                    ->color('warning')
-                    ->action(function (array $data, Contract $record): void {
-                        dd($record->id);
-                    })
+                    ->openUrlInNewTab()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
