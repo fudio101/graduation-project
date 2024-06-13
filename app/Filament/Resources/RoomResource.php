@@ -25,7 +25,7 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Toggle;
 
-class RoomsResource extends Resource
+class RoomResource extends Resource
 {
     protected static ?string $model = Room::class;
 
