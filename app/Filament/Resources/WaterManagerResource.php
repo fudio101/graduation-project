@@ -6,18 +6,15 @@ use App\Enums\WaterElectricStatus;
 use App\Filament\Resources\WaterManagerResource\Pages;
 use App\Filament\Resources\WaterManagerResource\RelationManagers;
 use App\Models\WaterManager;
-use Filament\Forms;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\Tabs;
+use Filament\Tables\Table;
 
 class WaterManagerResource extends Resource
 {
@@ -27,7 +24,7 @@ class WaterManagerResource extends Resource
 
     protected static ?string $modelLabel = 'Water Manager';
 
-    protected static ?string $navigationGroup = 'Services Management'; 
+    protected static ?string $navigationGroup = 'Services Management';
 
 
     public static function form(Form $form): Form
@@ -39,29 +36,29 @@ class WaterManagerResource extends Resource
                     ->translateLabel()
                     ->required(),
                 Tabs::make('status')
-                ->tabs([
-                    Tabs\Tab::make('0')
-                    ->label('Quantity')
-                        ->schema([
-                            TextInput::make('quantity')
+                    ->tabs([
+                        Tabs\Tab::make('0')
                             ->label('Quantity')
-                            ->numeric()
-                            ->rules(['required', 'min:0']),
-                        ]),
-                    Tabs\Tab::make('1')
-                    ->label('Step')
-                        ->schema([
-                            KeyValue::make('step')
-                                ->label('Step')
-                                ->keyLabel('Number Step')
-                                ->valueLabel('Price (vnđ)')
-                                ->keyPlaceholder('Enter Price ex: 1000')
-                                ->addable(false)
-                                ->required()
-                                ->rules(['min:0']),
-                        ]),
-                ])
-                ]);
+                            ->schema([
+                                TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->rules(['required', 'min:0']),
+                            ]),
+                        Tabs\Tab::make('1')
+                            ->label('Step')
+                            ->schema([
+                                KeyValue::make('step')
+                                    ->label('Step')
+                                    ->keyLabel('Number Step')
+                                    ->valueLabel('Price (vnđ)')
+                                    ->keyPlaceholder('Enter Price ex: 1000')
+                                    ->addable(false)
+                                    ->required()
+                                    ->rules(['min:0']),
+                            ]),
+                    ])
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -73,19 +70,14 @@ class WaterManagerResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
-                ->badge()
-                ->translateLabel(),
+                    ->badge()
+                    ->translateLabel(),
             ])
             ->filters([
-                
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
@@ -99,14 +91,14 @@ class WaterManagerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWaterManagers::route('/'),
+            'index'  => Pages\ListWaterManagers::route('/'),
             'create' => Pages\CreateWaterManager::route('/create'),
-            'edit' => Pages\EditWaterManager::route('/{record}/edit'),
+            'edit'   => Pages\EditWaterManager::route('/{record}/edit'),
         ];
     }
 
     public static function canCreate(): bool
     {
-       return false;
+        return false;
     }
 }
