@@ -9,21 +9,18 @@ use App\Filament\Resources\RoomsResource\RelationManagers\ServicesRelationManage
 use App\Models\House;
 use App\Models\Room;
 use App\Models\RoomType;
-use App\Models\Service;
-use Filament\Forms\Components\Hidden;
+use App\Models\User;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Toggle;
 
 class RoomResource extends Resource
 {
@@ -71,6 +68,7 @@ class RoomResource extends Resource
                     ->options(function () {
                         return House::pluck('name', 'id');
                     })
+                    ->disabledOn('edit')
                     ->translateLabel(),
                 RichEditor::make('description')
                     ->maxLength(65535)
@@ -91,25 +89,25 @@ class RoomResource extends Resource
                         }
                     })
                     ->translateLabel()
-                    ->hidden(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+                    ->hidden(fn($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
                 Toggle::make('checked')
                     ->label('Checked')
                     ->translateLabel()
-                    ->hidden(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
-                        // ->disabled(),
-            //     Section::make('Services')->schema([
-            //         Select::make('services')
-            //             ->relationship('services', 'name')
-            //             ->options(function () {
-            //                 return Service::pluck('name', 'id');
-            //             })
-            //             ->multiple()
-            //             ->translateLabel(),
-            //         // TextInput::make('quantity')
-            //         //     ->label('Quantity')
-            //         //     ->type('number')
-            //         //     ->translateLabel(),
-            //     ]),
+                    ->hidden(fn($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+                // ->disabled(),
+                //     Section::make('Services')->schema([
+                //         Select::make('services')
+                //             ->relationship('services', 'name')
+                //             ->options(function () {
+                //                 return Service::pluck('name', 'id');
+                //             })
+                //             ->multiple()
+                //             ->translateLabel(),
+                //         // TextInput::make('quantity')
+                //         //     ->label('Quantity')
+                //         //     ->type('number')
+                //         //     ->translateLabel(),
+                //     ]),
             ]);
     }
 
