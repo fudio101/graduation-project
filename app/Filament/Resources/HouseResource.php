@@ -7,10 +7,12 @@ use App\Enums\UserRole;
 use App\Filament\Resources\HouseResource\Pages;
 use App\Filament\Resources\HouseResource\RelationManagers\RoomsRelationManager;
 use App\Models\District;
+use App\Models\ElectricManager;
 use App\Models\House;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
+use App\Models\WaterManager;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -167,29 +169,34 @@ class HouseResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make()
+                    ->before(function (Tables\Actions\DeleteAction $action) {
+                        // Delete data water
+                        WaterManager::query()->where('house_id', $action->getRecord()->id)->delete();
+                        // Delete data electric
+                        ElectricManager::query()->where('house_id', $action->getRecord()->id)->delete();
+                    })
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+//            ->bulkActions([
+//                Tables\Actions\BulkActionGroup::make([
+//                ]),
+//            ])
             ->recordUrl(null);
     }
 
-public static function getEloquentQuery(): Builder
-{
-    $user = auth()->user();
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
 
-    if ($user->role === UserRole::Admin) {
+        if ($user->role === UserRole::Admin) {
+            return House::query();
+        }
+
+        if ($user->role === UserRole::Owner) {
+            return House::query()->where('owner_id', $user->id);
+        }
+
         return House::query();
     }
-
-    if ($user->role === UserRole::Owner) {
-        return House::query()->where('owner_id', $user->id);
-    }
-
-    return House::query();
-}
 
     public static function getRelations(): array
     {

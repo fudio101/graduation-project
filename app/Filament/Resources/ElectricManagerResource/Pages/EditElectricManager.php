@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ElectricManagerResource\Pages;
 
 use App\Filament\Resources\ElectricManagerResource;
-use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditElectricManager extends EditRecord
@@ -13,7 +12,6 @@ class EditElectricManager extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
         ];
     }
 }

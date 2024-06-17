@@ -27,7 +27,7 @@ class ElectricManagerResource extends Resource
 
     protected static ?string $modelLabel = 'Electric Manager';
 
-    protected static ?string $navigationGroup = 'Services Management'; 
+    protected static ?string $navigationGroup = 'Services Management';
 
     public static function form(Form $form): Form
     {
@@ -80,11 +80,6 @@ class ElectricManagerResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
