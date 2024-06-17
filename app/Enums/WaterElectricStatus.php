@@ -13,7 +13,7 @@ enum WaterElectricStatus: int implements HasLabel, HasColor
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Step     => 'Quantity',
+            self::Step => 'Quantity',
             self::Quantity => 'Step',
         };
     }
@@ -22,7 +22,7 @@ enum WaterElectricStatus: int implements HasLabel, HasColor
     {
         return match ($this) {
             self::Quantity => 'info',
-            self::Step     => 'gray',
+            self::Step => 'gray',
         };
     }
 }
