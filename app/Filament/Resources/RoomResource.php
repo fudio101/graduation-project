@@ -24,6 +24,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Toggle;
+use App\Models\User;
 
 class RoomResource extends Resource
 {
@@ -36,6 +37,13 @@ class RoomResource extends Resource
 
     // Sort order in navigation
     protected static ?int $navigationSort = 2;
+
+    public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->tenantRegistration(EWManagerRoom::class);
+}
 
     public static function form(Form $form): Form
     {

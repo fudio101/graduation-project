@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContractController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\BillController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +26,5 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::get('pdf/{order}', PdfController::class)->name('pdf'); 
+Route::get('bill', [BillController::class, 'billing'])->name('bill');
+Route::get('billing_room', [BillController::class, 'billing_room'])->name('billing_room'); 
