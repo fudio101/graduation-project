@@ -4,20 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Enums\WaterElectricStatus;
 use App\Filament\Resources\ElectricManagerResource\Pages;
-use App\Filament\Resources\ElectricManagerResource\RelationManagers;
 use App\Models\ElectricManager;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class ElectricManagerResource extends Resource
 {
@@ -33,33 +29,34 @@ class ElectricManagerResource extends Resource
     {
         return $form
             ->schema([
-            Radio::make('status')
-                ->options(WaterElectricStatus::class)
-                ->translateLabel()
-                ->required(),
-            Tabs::make('status')
-                ->tabs([
-                Tabs\Tab::make('0')
-                ->label('Quantity')
-                    ->schema([
-                        TextInput::make('quantity')
-                        ->label('Quantity')
-                        ->numeric()
-                        ->rules(['required', 'min:0']),
-                    ]),
-                Tabs\Tab::make('1')
-                ->label('Step')
-                    ->schema([
-                        KeyValue::make('step')
+                Radio::make('status')
+                    ->options(WaterElectricStatus::class)
+                    ->translateLabel()
+                    ->required(),
+                Tabs::make('status')
+                    ->tabs([
+                        Tabs\Tab::make('0')
+                            ->label('Quantity')
+                            ->schema([
+                                TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->required(fn($state) => $state == WaterElectricStatus::Quantity->value)
+                                    ->rules(['min:0']),
+                            ]),
+                        Tabs\Tab::make('1')
                             ->label('Step')
-                            ->keyLabel('Number Step')
-                            ->valueLabel('Price (vnđ)')
-                            ->keyPlaceholder('Enter Price ex: 1000')
-                            ->addable(false)
-                            ->required()
-                            ->rules(['min:0']),
-                    ]),
-            ])
+                            ->schema([
+                                KeyValue::make('step')
+                                    ->label('Step')
+                                    ->keyLabel('Number Step')
+                                    ->valueLabel('Price (vnđ)')
+                                    ->keyPlaceholder('Enter Price ex: 1000')
+                                    ->addable(false)
+                                    ->required(fn($state) => $state == WaterElectricStatus::Step->value)
+                                    ->rules(['min:0']),
+                            ]),
+                    ])
             ]);
     }
 
@@ -67,13 +64,13 @@ class ElectricManagerResource extends Resource
     {
         return $table
             ->columns([
-            TextColumn::make('house.name')
-                ->label('House Name')
-                ->searchable()
-                ->sortable(),
-            TextColumn::make('status')
-            ->badge()
-            ->translateLabel(),
+                TextColumn::make('house.name')
+                    ->label('House Name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->translateLabel(),
             ])
             ->filters([
                 //
@@ -93,14 +90,14 @@ class ElectricManagerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListElectricManagers::route('/'),
+            'index'  => Pages\ListElectricManagers::route('/'),
             'create' => Pages\CreateElectricManager::route('/create'),
-            'edit' => Pages\EditElectricManager::route('/{record}/edit'),
+            'edit'   => Pages\EditElectricManager::route('/{record}/edit'),
         ];
     }
 
     public static function canCreate(): bool
     {
-       return false;
+        return false;
     }
 }

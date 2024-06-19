@@ -17,7 +17,7 @@ class RoomTypeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     // Change name in page header navigation
-    protected static ?string $navigationGroup = 'Services Management'; 
+    protected static ?string $navigationGroup = 'Services Management';
 
     // Sort order in navigation
     protected static ?int $navigationSort = 2;
@@ -33,6 +33,7 @@ class RoomTypeResource extends Resource
                     ->columnSpan(6),
                 TextInput::make('rental_price')
                     ->required()
+                    ->numeric()
                     ->placeholder(__('Rental Price'))
                     ->columnSpan(6)
                     ->prefix('VNĐ'),

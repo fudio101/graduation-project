@@ -66,6 +66,10 @@ class UserPolicy
 
     private function baseAuthorize(User $user, User $model, string $action): Response
     {
+        if ($user->id === $model->id && $action === 'delete') {
+            return Response::deny();
+        }
+
         if ($user->role === UserRole::Admin || $user->id === $model->id && $action === 'view') {
             return Response::allow();
         }
