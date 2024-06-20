@@ -9,13 +9,13 @@ use App\Models\ContractEnd;
 use App\Models\Room;
 use App\Models\User;
 use Closure;
-use Exception;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -23,7 +23,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ContractResource extends Resource
 {
@@ -121,14 +120,14 @@ class ContractResource extends Resource
                             // Tìm phòng và cập nhật trạng thái phòng
                             $room = Room::find($record->room_id);
                             if (!$room) {
-                                throw new Exception('Room not found');
+                                throw new \Exception('Room not found');
                             }
                             $room->update(['status' => 0, 'checked' => 0]);
 
                             // Tìm hợp đồng và cập nhật trạng thái hợp đồng
                             $contract = Contract::find($record->id);
                             if (!$contract) {
-                                throw new Exception('Contract not found');
+                                throw new \Exception('Contract not found');
                             }
                             $contract->update([
                                 'status'     => 0,
@@ -148,11 +147,17 @@ class ContractResource extends Resource
                             $contract_end->save();
 
                             DB::commit();
-                        } catch (Exception $e) {
+                            Notification::make()
+                                ->title('End Contract successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
                             DB::rollBack();
                             // Xử lý ngoại lệ
-                            Log::error('Failed to end contract: ' . $e->getMessage());
-                            throw $e; // Hoặc bạn có thể tùy chỉnh thông báo lỗi gửi đến người dùng
+                            Notification::make()
+                                ->title('Failed to end contract: ' . $e->getMessage())
+                                ->danger()
+                                ->send();
                         }
                     })
                     ->visible(function (Contract $record): bool {
