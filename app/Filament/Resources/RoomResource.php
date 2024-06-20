@@ -6,6 +6,7 @@ use App\Enums\HouseRoomStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\RoomsResource\Pages;
 use App\Filament\Resources\RoomsResource\RelationManagers\ServicesRelationManager;
+use App\Models\Contract;
 use App\Models\House;
 use App\Models\Room;
 use App\Models\RoomType;
@@ -16,11 +17,14 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class RoomResource extends Resource
 {
@@ -142,6 +146,41 @@ class RoomResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('create-contract')
+                        ->label('Create Contract')
+                        ->color('info')
+                        ->action(function (array $data, Room $record): void {
+                            DB::beginTransaction();
+                            try {
+                                $contract = new Contract();
+                                $contract->room_id = $record->id;
+                                $contract->save();
+
+                                DB::commit();
+                                Notification::make()
+                                    ->title('Create Contract successfully')
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                DB::rollBack();
+                                // Xử lý ngoại lệ
+                                Notification::make()
+                                    ->title('Failed to end contract: ' . $e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        })
+                        ->visible(function (Room $record): bool {
+                            return !$record->contracts;
+                        })
+                        ->requiresConfirmation(),
+                ])
+                    ->label('More')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->size(ActionSize::Small)
+                    ->color('primary')
+                    ->button()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
