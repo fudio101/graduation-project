@@ -197,7 +197,10 @@ class UserResource extends Resource
         if ($user->role === UserRole::Owner) {
             $query->where(function (Builder $query) use ($user) {
                 $query->orWhere('id', $user->id)
-                    ->orWhere('role', UserRole::NormalUser)
+                    ->orWhere(function (Builder $query) use ($user) {
+                        $query->where('role', UserRole::NormalUser)
+                            ->whereDoesntHave('contracts');
+                    })
                     ->orWhere(function (Builder $query) use ($user) {
                         $query->where('role', UserRole::Manager)
                             ->where(function (Builder $query) use ($user) {
@@ -206,6 +209,9 @@ class UserResource extends Resource
                                         $query->where('owner_id', $user->id);
                                     });
                             });
+                    })
+                    ->orWhereHas('contracts.room.house.owner', function (Builder $query) use ($user) {
+                        $query->where('id', $user->id);
                     });
             });
         }
@@ -213,7 +219,13 @@ class UserResource extends Resource
         if ($user->role === UserRole::Manager) {
             $query->where(function (Builder $query) use ($user) {
                 $query->orWhere('id', $user->id)
-                    ->orWhere('role', UserRole::NormalUser);
+                    ->orWhere(function (Builder $query) use ($user) {
+                        $query->where('role', UserRole::NormalUser)
+                            ->whereDoesntHave('contracts');
+                    })
+                    ->orWhereHas('contracts.room.manager', function (Builder $query) use ($user) {
+                        $query->where('id', $user->id);
+                    });
             });
         }
 

@@ -42,7 +42,7 @@ class ContractResource extends Resource
                     ->required()
                     ->placeholder(__('Select Member'))
                     ->options(function () {
-                        return User::pluck('name', 'id');
+                        return User::whereIn('role', [UserRole::Manager, UserRole::NormalUser])->pluck('name', 'id');
                     })
                     ->translateLabel(),
                 Radio::make('status')
