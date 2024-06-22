@@ -24,6 +24,10 @@ class Room extends Model
         'house_id',
         'description',
         'checked',
+        'status',
+        'manager_id',
+        'electric_record',
+        'water_record',
     ];
 
     public static $STATUS_ACTIVE   = 1;
