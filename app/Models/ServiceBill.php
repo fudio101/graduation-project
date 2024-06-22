@@ -5,25 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ElectricBill extends Model
+class ServiceBill extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'bill_id',
-        'number',
-        'type',
-        'costs',
+        'service_id',
         'quantity',
-        'step',
-    ];
-
-    protected $casts = [
-        'step' => 'array',
+        'price',
     ];
 
     public function bill()
     {
         return $this->belongsTo(Bill::class);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 }

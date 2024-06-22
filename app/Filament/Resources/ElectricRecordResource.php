@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Notifications\Notification;
 
 class ElectricRecordResource extends Resource
 {
@@ -44,8 +45,22 @@ class ElectricRecordResource extends Resource
                 ->sortable(),
                 TextInputColumn::make('electric_record')
                 ->rules(['required', 'integer'])
-                ->label('Electric Record'),
-                TextInputColumn::make('water_record'),
+                ->label('Electric Record')
+                ->afterStateUpdated(function ($record, $state) {
+                    Notification::make()
+                        ->title('Update success')
+                        ->success()
+                        ->send();
+                }),
+                TextInputColumn::make('water_record')
+                    ->rules(['required', 'integer'])
+                    ->label('Electric Record')
+                    ->afterStateUpdated(function ($record, $state) {
+                        Notification::make()
+                            ->title('Update success')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->filters([
                 //

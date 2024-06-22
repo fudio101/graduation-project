@@ -11,6 +11,7 @@ class WaterBill extends Model
 
     protected $fillable = [
         'bill_id',
+        'number',
         'type',
         'costs',
         'quantity',

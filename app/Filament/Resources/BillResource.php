@@ -42,15 +42,23 @@ class BillResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->translateLabel(),
+                TextColumn::make('total_money')
+                    ->label('Total Money (vnd)')
+                    ->numeric(decimalPlaces: 0)
+                    ->sortable(),
             ])
             ->filters([
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('pdf') 
                     ->label('Thanh toán')
                     ->color('info')
-                    ->url(fn (Bill $record) => route('billing_room', $record))
+                    ->action(fn (Bill $record) => 
+                        $record->update(['status' => 1])
+                    )
+                    ->requiresConfirmation()
+                    // ->url(fn (Bill $record) => route('billing_room', $record))
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([
