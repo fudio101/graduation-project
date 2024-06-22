@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\ContractController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PdfController;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\PdfController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +25,8 @@ Route::get('/login', function () {
     return redirect(route('filament.admin.auth.login'));
 })->name('login');
 
-Route::get('pdf/{order}', PdfController::class)->name('pdf'); 
-Route::get('bill', [BillController::class, 'billing'])->name('bill');
-Route::get('billing_room', [BillController::class, 'billing_room'])->name('billing_room'); 
+Route::middleware('auth')->group(function () {
+    Route::get('pdf/{order}', PdfController::class)->name('pdf');
+    Route::get('bill', [BillController::class, 'billing'])->name('bill');
+    Route::get('billing_room', [BillController::class, 'billing_room'])->name('billing_room');
+});

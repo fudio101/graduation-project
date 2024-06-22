@@ -53,6 +53,8 @@ class WaterManagerResource extends Resource
                                     ->valueLabel('Price (vnđ)')
                                     ->keyPlaceholder('Enter Price ex: 1000')
                                     ->addable(false)
+                                    ->deletable(false)
+                                    ->editableKeys(false)
                                     ->required()
                                     ->rules(['min:0']),
                             ]),

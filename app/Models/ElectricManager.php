@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\WaterElectricStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\WaterElectricStatus;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ElectricManager extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'house_id',
@@ -18,7 +19,7 @@ class ElectricManager extends Model
     ];
 
     protected $casts = [
-        'step' => 'array',
+        'step'   => 'array',
         'status' => WaterElectricStatus::class,
     ];
 
