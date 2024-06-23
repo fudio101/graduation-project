@@ -2,29 +2,29 @@
 
 namespace App\Models;
 
-use App\Enums\WaterElectricStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ElectricManager extends Model
+class WaterBill extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'house_id',
-        'status',
+        'bill_id',
+        'number',
+        'type',
+        'costs',
         'quantity',
         'step',
     ];
 
     protected $casts = [
-        'step'   => 'array',
-        'status' => WaterElectricStatus::class,
+        'step' => 'array',
     ];
 
-    public function house()
+    public function bill()
     {
-        return $this->belongsTo(House::class);
+        return $this->belongsTo(Bill::class);
     }
 }

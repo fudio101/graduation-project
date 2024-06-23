@@ -60,4 +60,9 @@ class House extends Model
     {
         return $this->belongsTo(Ward::class);
     }
+
+    public function electric()
+    {
+        return $this->belongsTo(ElectricManager::class);
+    }
 }

@@ -7,34 +7,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Contract extends Model
+class Bill extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'bills';
 
     protected $fillable = [
         'room_id',
-        'member_id',
+        'total_money',
+        'month',
+        'status',
+        'paid_date',
+        'note',
         'start_date',
         'end_date',
     ];
+
+    public function rooms()
+    {
+        return $this->belongsTo(Room::class, 'room_id');
+    }
 
     protected $casts = [
         'status' => HouseRoomStatus::class,
     ];
 
-    public static $ACTIVE   = 1;
-    public static $INACTIVE = 0;
-
-    // Thiết lập mối quan hệ với User
-    public function member()
-    {
-        return $this->belongsTo(User::class, 'member_id');
-    }
-
-    // Thiết lập mối quan hệ với Room
-    public function room()
-    {
-        return $this->belongsTo(Room::class, 'room_id');
-    }
 }

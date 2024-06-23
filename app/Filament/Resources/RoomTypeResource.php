@@ -3,17 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoomTypeResource\Pages;
-use App\Filament\Resources\RoomTypeResource\RelationManagers;
 use App\Models\RoomType;
-use Faker\Provider\ar_EG\Text;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\TextInput;
 
 class RoomTypeResource extends Resource
 {
@@ -22,7 +17,7 @@ class RoomTypeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     // Change name in page header navigation
-    protected static ?string $navigationGroup = 'Services Management'; 
+    protected static ?string $navigationGroup = 'Services Management';
 
     // Sort order in navigation
     protected static ?int $navigationSort = 2;
@@ -38,6 +33,7 @@ class RoomTypeResource extends Resource
                     ->columnSpan(6),
                 TextInput::make('rental_price')
                     ->required()
+                    ->numeric()
                     ->placeholder(__('Rental Price'))
                     ->columnSpan(6)
                     ->prefix('VNĐ'),
@@ -84,9 +80,9 @@ class RoomTypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRoomTypes::route('/'),
+            'index'  => Pages\ListRoomTypes::route('/'),
             'create' => Pages\CreateRoomType::route('/create'),
-            'edit' => Pages\EditRoomType::route('/{record}/edit'),
+            'edit'   => Pages\EditRoomType::route('/{record}/edit'),
         ];
     }
 }
