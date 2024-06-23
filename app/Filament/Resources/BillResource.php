@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\Action;
 
 class BillResource extends Resource
 {
@@ -51,6 +52,9 @@ class BillResource extends Resource
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
+                Action::make('delete')
+                    ->requiresConfirmation()
+                    ->action(fn (Bill $record) => $record->delete()),
                 Tables\Actions\Action::make('pdf') 
                     ->label('Thanh toán')
                     ->color('info')

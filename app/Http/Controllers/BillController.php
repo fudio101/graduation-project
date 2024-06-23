@@ -19,13 +19,16 @@ class BillController extends Controller
     {
         DB::beginTransaction();
         try {
-            $date  = $request->date;
-            $rooms = Room::with('roomType', 'services')->whereHas('contracts', function ($query) use ($date) {
+            $date = $request->date;
+
+            $check_bill    = Bill::where('month', $date)->get();
+            $room_ids_bill = $check_bill->pluck('room_id')->all();
+            $rooms         = Room::with('roomType', 'services')->whereNotIn('id', $room_ids_bill)->whereHas('contracts', function ($query) use ($date) {
                 $query->where('status', 1);
             })->get();
 
             foreach ($rooms as $room) {
-                  // Bill
+                      // Bill
                 $bill = Bill::create([
                     'room_id'     => $room->id,
                     'total_money' => 0,
@@ -37,7 +40,7 @@ class BillController extends Controller
 
                 $type_room_money = $room->roomType->rental_price;
 
-                // Service Bill
+                    // Service Bill
                 $room_services       = $room->services;
                 $room_services_money = 0;
                 foreach ($room_services as $service) {
@@ -51,11 +54,11 @@ class BillController extends Controller
                     ]);
                 }
 
-                // Electric Bill
+                    // Electric Bill
                 $room_electric       = ElectricManager::select('id', 'status', 'step', 'quantity')->where('house_id', $room->house_id)->first();
                 $room_electric_money = 0;
                 if ($room_electric->status->value == 0) {
-                    $room_electric_money    = $room_electric->quantity * $room->electric_record;
+                    $room_electric_money = $room_electric->quantity * $room->electric_record;
                 } else {
                     $step_electric       = $room_electric->step;
                     $electric_record     = $room->electric_record;
@@ -71,7 +74,7 @@ class BillController extends Controller
                     'step'     => $room_electric->step,
                 ]);
 
-                // Water Bill
+                    // Water Bill
                 $room_water       = WaterManager::select('id', 'status', 'step', 'quantity')->where('house_id', $room->house_id)->first();
                 $room_water_money = 0;
                 if ($room_water->status->value == 0) {
@@ -91,8 +94,8 @@ class BillController extends Controller
                     'step'     => $room_water->step,
                 ]);
 
-                $total_money_room =  $type_room_money + $room_services_money + $room_electric_money + $room_water_money;
-                $bill = $bill->update(['total_money' => $total_money_room]); 
+                $total_money_room = $type_room_money + $room_services_money + $room_electric_money + $room_water_money;
+                $bill             = $bill->update(['total_money' => $total_money_room]);
             }
             DB::commit();
             return redirect()->back();
@@ -111,7 +114,7 @@ class BillController extends Controller
         return view('bill.billing_room', compact('rooms'));
     }
 
-        // Calculate tier for Step
+            // Calculate tier for Step
     public function calculateTier($step_electric)
     {
         $tiers        = [];
@@ -128,7 +131,7 @@ class BillController extends Controller
         return $tiers;
     }
 
-        // Calculate tier for Step
+            // Calculate tier for Step
     function calculateElectricityBill($number, $tiers) {
         $totalCost = 0;
         foreach ($tiers as $tier) {

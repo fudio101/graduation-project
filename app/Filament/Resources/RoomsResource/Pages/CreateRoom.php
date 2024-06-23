@@ -18,13 +18,5 @@ class CreateRoom extends CreateRecord
         $contract = new Contract();
         $contract->room_id = $this->record->id;
         $contract->save();
-
-        $electric_record = new ElectricRecord();
-        $electric_record->room_id = $this->record->id;
-        $electric_record->save();
-
-        $water_record = new WaterRecord();
-        $water_record->room_id = $this->record->id;
-        $water_record->save();
     }
 }
