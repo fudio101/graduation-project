@@ -169,6 +169,9 @@ class ContractResource extends Resource
                     ->label('PDF')
                     ->color('success')
                     ->url(fn(Contract $record) => route('pdf', $record))
+                    ->visible(function (Contract $record): bool {
+                        return $record->status->value === 1;
+                    })
                     ->openUrlInNewTab()
             ])
             ->bulkActions([
