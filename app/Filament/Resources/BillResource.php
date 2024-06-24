@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\TextInput;
 
 class BillResource extends Resource
 {
@@ -27,7 +29,8 @@ class BillResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('month')
+                    ->label('Month'),
             ]);
     }
 
@@ -49,9 +52,19 @@ class BillResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Filter::make('created_at')
+                    ->form([
+                        TextInput::make('month')
+                        ->type('month')
+                        ->default(date('Y-m'))
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->where('month', $data['month']);
+                    })
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
                 Action::make('delete')
                     ->requiresConfirmation()
                     ->action(fn (Bill $record) => $record->delete()),
