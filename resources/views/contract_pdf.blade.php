@@ -83,8 +83,28 @@
     </div>
     <div class="section">
         <h3>ĐIỀU 1 : NỘI DUNG HỢP ĐỒNG</h3>
+        <h3>ĐIỀU 2 : ...................</h3>
+        <h3>ĐIỀU 3 : ...................</h3>
         <!-- Add more content for the contract here -->
     </div>
+
+    <div class="container">
+        <div style="float: left;">
+            <div class="field"><b>BÊN A (Ký và ghi rõ họ tên)</b></div>
+            <br />
+            <br />
+            <br />
+            <div class="field">Ký tên: <span>__________________________</span></div>
+        </div>
+        <div style="float: right;">
+            <div class="field"><b>BÊN B (Ký và ghi rõ họ tên)</b></div>
+            <br />
+            <br />
+            <br />
+            <div class="field">Ký tên: <span>__________________________</span></div>
+        </div>
+    </div>
+    
 </body>
 
 </html>

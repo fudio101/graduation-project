@@ -74,6 +74,9 @@ class BillResource extends Resource
                     ->action(fn (Bill $record) => 
                         $record->update(['status' => 1])
                     )
+                    ->visible(function (Bill $record): bool {
+                        return $record->status->value === 0;
+                    })
                     ->requiresConfirmation()
                     // ->url(fn (Bill $record) => route('billing_room', $record))
                     ->openUrlInNewTab(),
