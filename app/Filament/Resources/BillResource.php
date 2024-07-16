@@ -16,6 +16,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\DatePicker;
+use Filament\Support\RawJs;
+use Filament\Forms\Components\Select;
+use App\Enums\WaterElectricStatus;
+use Filament\Forms\Components\Repeater;
 
 class BillResource extends Resource
 {
@@ -31,6 +37,63 @@ class BillResource extends Resource
             ->schema([
                 TextInput::make('month')
                     ->label('Month'),
+                Fieldset::make('Time Period')
+                    ->schema([
+                        DatePicker::make('start_date')
+                            ->label('Start Date'),
+                        DatePicker::make('end_date')
+                            ->label('End Date'),
+                    ]),
+                Select::make('room')
+                    ->relationship('rooms', 'name')
+                    ->label('Tên phòng'),
+                Select::make('room')
+                    ->relationship('rooms.roomType', 'rental_price')
+                    ->label('Tiền phòng'),
+                Fieldset::make('Điện')
+                    ->relationship('electricBill')
+                    ->schema([
+                        Select::make('type')
+                            ->options(WaterElectricStatus::class)
+                            ->label('Loại'),
+                        TextInput::make('number')
+                            ->label('Số điện'),
+                        TextInput::make('costs')
+                            ->label('Giá (VNĐ)')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->numeric(),
+                    ])
+                    ->columns(3),
+                Fieldset::make('Nước')
+                    ->relationship('waterBill')
+                    ->schema([
+                        Select::make('type')
+                            ->options(WaterElectricStatus::class)
+                            ->label('Loại'),
+                        TextInput::make('number')
+                            ->label('Số nước'),
+                        TextInput::make('costs')
+                            ->label('Giá (VNĐ)')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->numeric(),
+                    ])
+                    ->columns(3),
+                Repeater::make('serviceBill')
+                    ->relationship('serviceBill')
+                    ->schema([
+                        Select::make('service_id')
+                            ->relationship('service', 'name')
+                            ->label('Service')
+                            ->required(),
+                        TextInput::make('quantity')
+                            ->label('Quantity')
+                            ->numeric(),     
+                        TextInput::make('price')
+                            ->label('Price (vnd)')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->numeric(),
+                    ])
+                    ->columns(3),
             ]);
     }
 
@@ -100,7 +163,7 @@ class BillResource extends Resource
         return [
             'index' => Pages\ListBills::route('/'),
             'create' => Pages\CreateBill::route('/create'),
-            'edit' => Pages\EditBill::route('/{record}/edit'),
+            // 'edit' => Pages\EditBill::route('/{record}/edit'),
         ];
     }
 }

@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
 
 class RoomTypeResource extends Resource
 {
@@ -33,10 +34,11 @@ class RoomTypeResource extends Resource
                     ->columnSpan(6),
                 TextInput::make('rental_price')
                     ->required()
-                    ->numeric()
                     ->placeholder(__('Rental Price'))
                     ->columnSpan(6)
-                    ->prefix('VNĐ'),
+                    ->prefix('VNĐ')
+                    ->mask(RawJs::make('$money($input)'))
+                    ->numeric(),
             ]);
     }
 

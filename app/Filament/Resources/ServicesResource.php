@@ -18,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Support\RawJs;
 
 class ServicesResource extends Resource
 {
@@ -50,9 +51,10 @@ class ServicesResource extends Resource
                 ->placeholder(__('Enter Name')),
                 TextInput::make('price')
                 ->required()
-                ->numeric()
                 ->prefix('VNĐ')
-                ->step(100),
+                ->step(100)
+                ->mask(RawJs::make('$money($input)'))
+                ->numeric(),
                 Textarea::make('description')
                 ->rows(10)
                 ->cols(20)

@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
 
 class ElectricManagerResource extends Resource
 {
@@ -42,7 +43,8 @@ class ElectricManagerResource extends Resource
                                     ->label('Quantity')
                                     ->numeric()
                                     ->required(fn($state) => $state == WaterElectricStatus::Quantity->value)
-                                    ->rules(['min:0']),
+                                    ->rules(['min:0'])
+                                    ->mask(RawJs::make('$money($input)')),
                             ]),
                         Tabs\Tab::make('1')
                             ->label('Step')

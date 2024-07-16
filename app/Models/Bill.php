@@ -6,6 +6,8 @@ use App\Enums\HouseRoomStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\ElectricBill;
+
 
 class Bill extends Model
 {
@@ -33,4 +35,18 @@ class Bill extends Model
         'status' => HouseRoomStatus::class,
     ];
 
+    public function electricBill()
+    {
+        return $this->hasOne(ElectricBill::class, 'bill_id');
+    }
+
+    public function waterBill()
+    {
+        return $this->hasOne(WaterBill::class, 'bill_id');
+    }
+
+    public function serviceBill()
+    {
+        return $this->hasMany(ServiceBill::class);
+    }
 }
